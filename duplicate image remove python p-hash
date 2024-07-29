@@ -1,0 +1,34 @@
+### Run in Google Colab Notebook ###
+
+
+!pip install imagehash # For colab notebook. For local python vscode, remove this line and in terminal seperately command pip install imagehash
+
+
+import os
+from PIL import Image
+import imagehash
+
+# Directory containing images
+image_dir = '/content/' # Your directory
+
+# Store hashes and their corresponding filenames
+hashes = {}
+duplicates = []
+
+# Loop over the image files in the directory
+for filename in os.listdir(image_dir):
+    if filename.endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):  # check file extensions
+        file_path = os.path.join(image_dir, filename)
+        with Image.open(file_path) as img:
+            # Generate the perceptual hash for the image
+            hash = imagehash.phash(img)
+
+            # Check if this hash already exists in the dictionary
+            if hash in hashes:
+                duplicates.append(filename)
+                print(f"Duplicate found: {filename} is a duplicate of {hashes[hash]}")
+                os.remove(file_path)  # Delete the duplicate file
+            else:
+                hashes[hash] = filename
+
+print("Duplicate removal complete. Removed files:", duplicates)
